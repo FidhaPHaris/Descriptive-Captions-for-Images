@@ -1,0 +1,50 @@
+<html>
+<body>
+    <center>
+        <img src="{{ url_for('static', filename='file.jpg') }}" alt="">
+        <br>
+        <br>
+        <div id="original-caption">{{ final }}</div>
+        <br>
+        <br>
+        <div id="translated-caption"></div> <!-- Added for displaying translated caption -->
+        <br>
+        <br>
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="hi">Hindi</option>
+            <option value="ml">Malayalam</option>
+            <option value="ta">Tamil</option>
+            <!-- Add more language options as needed -->
+        </select>
+        <button onclick="translateCaption()">Translate Caption</button>
+        <br>
+        <br>
+        <audio controls>
+            <source src="{{ url_for('static', filename='audio.mp3') }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        
+        
+    </center>
+
+    <script>
+        function translateCaption() {
+            var language = document.getElementById("language-select").value;
+            var caption = document.getElementById("original-caption").innerText;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/translate", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var translatedCaption = JSON.parse(xhr.responseText).translated_caption;
+                    document.getElementById("translated-caption").innerText = translatedCaption;
+                }
+            };
+            xhr.send(JSON.stringify({ language: language, caption: caption }));
+        }
+    </script>
+</body>
+</html>
